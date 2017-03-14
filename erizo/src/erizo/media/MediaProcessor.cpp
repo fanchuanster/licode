@@ -448,7 +448,7 @@ int InputProcessor::deliverVideoData_(std::shared_ptr<dataPacket> video_packet) 
             auto rc = mediasource->getAudioSourceSSRC();
             if (rc == 0)
             {
-              ELOG_WARN("ssrc invalid from mediasource->getAudioSourceSSRC()");
+              //ELOG_WARN("ssrc invalid at mediasource->getAudioSourceSSRC()");
             }
             else
             {
@@ -488,7 +488,15 @@ int InputProcessor::deliverVideoData_(std::shared_ptr<dataPacket> video_packet) 
         auto mediasource = dynamic_cast<MediaSource*>(rtpReceiver_);
         if (mediasource)
         {
-            ssrc = mediasource->getVideoSourceSSRC();
+            auto tmp = mediasource->getVideoSourceSSRC();
+	    if (tmp == 0)
+  	    {
+		//ELOG_WARN("invalid ssrc at mediasource->getVideoSourceSSRC()");
+	    }
+            else
+            {
+		ssrc = tmp;
+	    }
         }
 
         do {
