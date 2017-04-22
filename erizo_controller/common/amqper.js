@@ -10,7 +10,7 @@ GLOBAL.config.rabbit = GLOBAL.config.rabbit || {};
 GLOBAL.config.rabbit.host = GLOBAL.config.rabbit.host || 'localhost';
 GLOBAL.config.rabbit.port = GLOBAL.config.rabbit.port || 5672;
 
-var TIMEOUT = 5000;
+var TIMEOUT = 50000;
 
 // This timeout shouldn't be too low because it won't listen to onReady responses from ErizoJS
 var REMOVAL_TIMEOUT = 300000;
@@ -178,6 +178,7 @@ exports.bindBroadcast = function(id, callback) {
 
 var callbackError = function(corrID) {
     for (var i in map[corrID].fn) {
+log.warn('amqper:callbackError timeout!!');
         map[corrID].fn[i]('timeout');
     }
     delete map[corrID];
