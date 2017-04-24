@@ -1,7 +1,7 @@
 /* globals Erizo */
 'use strict';
 var serverUrl = '/';
-var localStream, room, recording, recordingId;
+var localStream,legalCaseScreen, room, recording, recordingId;
 
 
 function showLegalCase() {
@@ -27,6 +27,31 @@ function showLegalCase() {
   legalCaseScreen.init();
 }
 
+function showRecordingFile()
+{
+	  var conf={video: true, audio: true, attributes: {name: 'File'},
+	    //url:"rtsp://user1:222222@111.198.38.42:8554/stream"
+	    url:"rtsp://user1:222222@111.198.38.42:8554/stream"
+	  };
+	  var legalCaseScreen = Erizo.Stream(conf);
+
+	  legalCaseScreen.addEventListener("access-accepted", function ()
+	{
+	    console.log("test showRecordingFile access-accepted");
+
+	    room.publish(legalCaseScreen, {maxVideoBW: 300}, function(id, error) {
+	      if (id === undefined) {
+	        console.log("test Error publishing stream,", error);
+	      }
+	      else {
+	        console.log("test Published stream ", id);
+	      }
+	    }); 
+	  });
+
+	  legalCaseScreen.init();
+	}
+
 
 function getParameterByName(name) {
   name = name.replace(/[\[]/, '\\\[').replace(/[\]]/, '\\\]');
@@ -46,6 +71,15 @@ function startRecording () {  // jshint ignore:line
           recording = true;
           recordingId = id;
           });
+      
+      room.startRecording(legalCaseScreen, function(id) {
+       
+    	  console.log('rtsp id',id);
+    	  
+          });
+      
+      
+      
 
     } else {
       room.stopRecording(recordingId);
@@ -75,8 +109,7 @@ window.onload = function () {
   recording = false;
   var screen = getParameterByName('screen');
   var roomName = getParameterByName('room') || 'basicExampleRoom';
-  var roomType = getParameterByName('type') || 'erizo';
-  console.log('Selected Room', roomName, 'of type', roomType);
+  console.log('Selected Room', room);
   var config = {audio: true,
     video: true,
     data: true,
@@ -90,11 +123,15 @@ window.onload = function () {
     config.extensionId = 'okeephmleflklcdebijnponpabbmmgeo';
   }
   localStream = Erizo.Stream(config);
-  var createToken = function(roomData, callback) {
+  var createToken = function(userName, role, roomName, callback) {
 
     var req = new XMLHttpRequest();
     var url = serverUrl + 'createToken/';
+   
+    //var body = {username: userName, role: role, room:roomName};
 
+    var body = {room_id:'58eedbc0a6f1a28363683408',username: userName, role: role};
+    
     req.onreadystatechange = function () {
       if (req.readyState === 4) {
         callback(req.responseText);
@@ -103,12 +140,10 @@ window.onload = function () {
 
     req.open('POST', url, true);
     req.setRequestHeader('Content-Type', 'application/json');
-    req.send(JSON.stringify(roomData));
+    req.send(JSON.stringify(body));
   };
-
-  var roomData  = {username: 'user', role: 'presenter', room: roomName, type: roomType};
-
-  createToken(roomData, function (response) {
+  
+  createToken('user', 'presenter', roomName, function (response) {
       var token = response;
       console.log(token);
       room = Erizo.Room({token: token});
@@ -128,12 +163,17 @@ window.onload = function () {
           };
 
           room.addEventListener('room-connected', function (roomEvent) {
-              if (getParameterByName('user') == 'wen') {
+              if (getParameterByName('user') == 'wen')
+              {
                 showLegalCase();
               }
+              else if(getParameterByName('user') == 'du')
+              {
+                  showRecordingFile();
+               }
         var options = {metadata: {type: 'publisher'}};
         var enableSimulcast = getParameterByName('simulcast');
-        if (enableSimulcast) options.simulcast = {numSpatialLayers: 2};
+        if (enableSimulcast) options._simulcast = {numSpatialLayers: 2};
 
         var onlySubscribe = getParameterByName('onlySubscribe');
         if (!onlySubscribe) room.publish(localStream, options);
