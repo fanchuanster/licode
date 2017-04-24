@@ -401,9 +401,6 @@ int InputProcessor::deliverVideoData_(std::shared_ptr<dataPacket> video_packet) 
 
     static void receiveRtpData(unsigned char*rtpdata, int len) {
         if (audioSink!=NULL){
-            static char sendAudioBuffer[1600];
-
-            assert(len<=1600);
 
             std::shared_ptr<dataPacket> packet = std::make_shared<dataPacket>(0, reinterpret_cast<char*>(rtpdata), len, AUDIO_PACKET);
             audioSink->deliverVideoData(packet);

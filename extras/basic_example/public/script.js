@@ -75,7 +75,8 @@ window.onload = function () {
   recording = false;
   var screen = getParameterByName('screen');
   var roomName = getParameterByName('room') || 'basicExampleRoom';
-  console.log('Selected Room', room);
+  var roomType = getParameterByName('type') || 'erizo';
+  console.log('Selected Room', roomName, 'of type', roomType);
   var config = {audio: true,
     video: true,
     data: true,
@@ -89,11 +90,10 @@ window.onload = function () {
     config.extensionId = 'okeephmleflklcdebijnponpabbmmgeo';
   }
   localStream = Erizo.Stream(config);
-  var createToken = function(userName, role, roomName, callback) {
+  var createToken = function(roomData, callback) {
 
     var req = new XMLHttpRequest();
     var url = serverUrl + 'createToken/';
-    var body = {username: userName, role: role, room:roomName};
 
     req.onreadystatechange = function () {
       if (req.readyState === 4) {
@@ -103,10 +103,12 @@ window.onload = function () {
 
     req.open('POST', url, true);
     req.setRequestHeader('Content-Type', 'application/json');
-    req.send(JSON.stringify(body));
+    req.send(JSON.stringify(roomData));
   };
 
-  createToken('user', 'presenter', roomName, function (response) {
+  var roomData  = {username: 'user', role: 'presenter', room: roomName, type: roomType};
+
+  createToken(roomData, function (response) {
       var token = response;
       console.log(token);
       room = Erizo.Room({token: token});
@@ -131,7 +133,7 @@ window.onload = function () {
               }
         var options = {metadata: {type: 'publisher'}};
         var enableSimulcast = getParameterByName('simulcast');
-        if (enableSimulcast) options._simulcast = {numSpatialLayers: 2};
+        if (enableSimulcast) options.simulcast = {numSpatialLayers: 2};
 
         var onlySubscribe = getParameterByName('onlySubscribe');
         if (!onlySubscribe) room.publish(localStream, options);
