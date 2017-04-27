@@ -128,7 +128,9 @@ var cleanExampleRooms = function (callback) {
         deleteRoomsIfEmpty (roomsToCheck, function () {
             callback('done');
         });
-    });
+    }, function(error, status) {
+console.log('Error getRooms:', error, ' status:', status);
+});
 
 };
 
