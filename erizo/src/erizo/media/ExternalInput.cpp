@@ -212,8 +212,8 @@ namespace erizo {
                 int64_t pts = av_rescale(lastAudioPts_, 1000000, (long int)audio_time_base_);
                 int64_t now = av_gettime() - startTime_ + 200;
                 if (pts > now){
-                    av_usleep(pts - now);
-                    ELOG_DEBUG("Speed control audio, slept %ld = %ld-%ld", pts-now, pts, now);
+                    //av_usleep(pts - now);
+                    //ELOG_DEBUG("Speed control audio, slept %ld = %ld-%ld", pts-now, pts, now);
                 }
                 lastAudioPts_ = avpacket_.pts;
 
