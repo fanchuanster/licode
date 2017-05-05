@@ -78,6 +78,12 @@ namespace erizo {
       const std::string& peerId) {
     ELOG_DEBUG("Adding subscriber");
     boost::mutex::scoped_lock lock(monitor_mutex_);
+
+auto audiossrc = publisher->getAudioSourceSSRC();
+auto videossrc = publisher->getVideoSourceSSRC();
+if (audiossrc == 0) publisher->setAudioSourceSSRC(44444);
+if (videossrc == 0) publisher->setVideoSourceSSRC(55543);
+
     ELOG_DEBUG("From %u, %u ", publisher->getAudioSourceSSRC(), publisher->getVideoSourceSSRC());
     webRtcConn->setAudioSinkSSRC(this->publisher->getAudioSourceSSRC());
     webRtcConn->setVideoSinkSSRC(this->publisher->getVideoSourceSSRC());

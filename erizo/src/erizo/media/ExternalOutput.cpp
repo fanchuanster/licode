@@ -43,7 +43,7 @@ ExternalOutput::ExternalOutput(const std::string& outputUrl)
             ELOG_ERROR("Error guessing format %s", context_->filename);
         } else {
             context_->oformat->video_codec = AV_CODEC_ID_VP8;
-      context_->oformat->audio_codec = AV_CODEC_ID_NONE;
+      context_->oformat->audio_codec = AV_CODEC_ID_OPUS;
       // We'll figure this out once we start receiving data; it's either PCM or OPUS
         }
     }
@@ -269,7 +269,7 @@ void ExternalOutput::writeVideoData(char* buf, int len){
 
     this->initContext();
     if (video_stream_ == NULL) {
-        // could not init our context yet.
+        ELOG_WARN("could not init our context yet.");
         return;
     }
 
@@ -298,7 +298,11 @@ void ExternalOutput::writeVideoData(char* buf, int len){
         avpkt.size = unpackagedSize_;
         avpkt.pts = timestampToWrite;
         avpkt.stream_index = 0;
-        av_interleaved_write_frame(context_, &avpkt);   // takes ownership of the packet
+        int ret = av_interleaved_write_frame(context_, &avpkt);   // takes ownership of the packet
+if (ret != 0)
+{
+ELOG_WARN("Failed to write video data, error %d", ret);
+}
         unpackagedSize_ = 0;
         unpackagedBufferpart_ = unpackagedBuffer_;
     }
@@ -314,7 +318,7 @@ int ExternalOutput::deliverVideoData_(std::shared_ptr<dataPacket> video_packet) 
   std::shared_ptr<dataPacket> copied_packet = std::make_shared<dataPacket>(*video_packet);
   // TODO(javierc): We should support higher layers, but it requires having an entire pipeline at this point
   if (!video_packet->belongsToSpatialLayer(0)) {
-    return 0;
+  //  return 0;
   }
     if (videoSourceSsrc_ == 0){    
     RtpHeader* h = reinterpret_cast<RtpHeader*>(copied_packet->data);
