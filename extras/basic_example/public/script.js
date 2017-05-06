@@ -5,9 +5,9 @@ var localStream,legalCaseScreen, room, recording, recordingId;
 
 
 function showLegalCase() {
-  var conf={video: true, audio: true, attributes: {name: 'LegalCase'},
-    //url:"rtsp://user1:222222@111.198.38.42:8554/stream"
-    url:"file:///opt/test.mov"
+  var conf={video: true, audio: false, attributes: {name: 'LegalCase'},
+    url:"rtsp://user1:222222@111.198.38.42:8554/stream"
+    //url:"file:///opt/test.mov"
   };
   legalCaseScreen = Erizo.Stream(conf);
 

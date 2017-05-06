@@ -73,10 +73,10 @@ void RtpPacketQueue::pushPacket(const char *data, int length) {
   }
 
   // Enforce our max queue size.
-  while (getDepthInSeconds() > maxDepthInSeconds_) {
-    ELOG_WARN("RtpPacketQueue - Discarding a sample due to excessive queue depth");
-    queue_.pop_back();  // remove oldest samples.
-  }
+  //while (getDepthInSeconds() > maxDepthInSeconds_) {
+    //ELOG_WARN("RtpPacketQueue - Discarding a sample due to excessive queue depth");
+    //queue_.pop_back();  // remove oldest samples.
+ // }
 }
 
 // pops a packet off the queue, respecting the specified queue depth.
